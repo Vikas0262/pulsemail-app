@@ -8,6 +8,7 @@ import {
   setRecipientsFromList,
 } from '../controllers/campaignController.js';
 import { sendCampaign } from '../controllers/campaignController.js';
+import { getCampaignAnalytics } from '../controllers/campaignController.js';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.get('/', authMiddleware, getCampaigns);
 router.get('/:id', authMiddleware, getCampaignById);
 router.post('/:id/recipients/audience', authMiddleware, setRecipientsFromAudience);
 router.post('/:id/recipients/list', authMiddleware, setRecipientsFromList);
+router.get('/:id/analytics', authMiddleware, getCampaignAnalytics);
 
 
 router.post('/:id/send', authMiddleware, sendCampaign);

@@ -232,3 +232,45 @@ export const sendCampaign = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ error: 'Failed to send campaign' });
   }
 };
+
+
+export const getCampaignAnalytics = async (req: AuthRequest, res: Response) => {
+  try {
+    const accountId = req.accountId as number;
+    const campaignId = Number(req.params.id);
+
+    const campaign = await prisma.campaign.findFirst({
+      where: { id: campaignId, accountId },
+    });
+
+    if (!campaign) {
+      return res.status(404).json({ error: 'Campaign not found' });
+    }
+
+    const recipients = await prisma.campaignRecipient.findMany({
+      where: { campaignId },
+    });
+
+    const totalRecipients = recipients.length;
+    const sent = recipients.filter((r) => r.status === 'sent').length;
+    const delivered = recipients.filter((r) => r.status === 'delivered').length;
+    const opened = recipients.filter((r) => r.status === 'opened').length;
+    const failed = recipients.filter((r) => r.status === 'failed').length;
+    const pending = recipients.filter((r) => r.status === 'pending').length;
+
+    res.json({
+      campaignId,
+      campaignName: campaign.name,
+      status: campaign.status,
+      totalRecipients,
+      pending,
+      sent,
+      delivered,
+      opened,
+      failed,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch analytics' });
+  }
+};
