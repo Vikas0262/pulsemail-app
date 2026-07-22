@@ -5,7 +5,12 @@ import { Request, Response } from "express";
 
 const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const body = req.body ?? {};
+    if (!req.body) {
+      console.warn('loginController: req.body is undefined', { method: req.method, url: req.url, headers: req.headers });
+    }
+
+    const { email, password } = body;
 
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
@@ -23,6 +28,11 @@ const login = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET is not set in environment');
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
+
     const token = jwt.sign(
       { userId: user.id, accountId: user.accountId },
       process.env.JWT_SECRET as string,
@@ -36,6 +46,7 @@ const login = async (req: Request, res: Response) => {
         user: { id: user.id, email: user.email, accountId: user.accountId },
       });
   } catch (error) {
+    console.error('Login error:', error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };

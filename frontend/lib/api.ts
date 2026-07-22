@@ -16,6 +16,15 @@ async function apiFetch(path: string, options: RequestInit = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
+  // If the body is a JSON string and no content-type provided, set it.
+  const body = options.body as any;
+  if (body && !(body instanceof FormData)) {
+    const hasContentType = Object.keys(headers).some(h => h.toLowerCase() === 'content-type');
+    if (!hasContentType) {
+      headers['Content-Type'] = 'application/json;charset=UTF-8';
+    }
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers,
