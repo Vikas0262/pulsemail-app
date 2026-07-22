@@ -12,9 +12,17 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const app = express();
+const allowedOrigins = process.env.FRONTEND_URL
+  ?.split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigins?.length ? allowedOrigins : true,
+  }),
+);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactRoutes);
