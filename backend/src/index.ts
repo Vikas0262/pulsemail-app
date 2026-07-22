@@ -5,6 +5,7 @@ import cors from 'cors';
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 import './workers/campaignWorker.js';
+import { handleResendWebhook } from './controllers/webhookController.js';
 import authRoutes from './routes/authRoutes.js';
 // import authMiddleware, { AuthRequest } from './middleware/authMiddleware.js';
 import contactRoutes from './routes/contactRoutes.js';
@@ -20,6 +21,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/audiences', audienceRoutes);  
 app.use('/api/campaigns', campaignRoutes);
+app.post('/api/webhooks/resend', handleResendWebhook);
+
 
 // app.get("/health",(req,res)=>{
 //     res.status(200).send("Server is healthy");
