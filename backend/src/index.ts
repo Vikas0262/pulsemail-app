@@ -5,6 +5,7 @@ import cors from 'cors';
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 import authRoutes from './routes/authRoutes.js';
+// import authMiddleware, { AuthRequest } from './middleware/authMiddleware.js';
 
 const app = express();
 app.use(express.json());
@@ -12,10 +13,12 @@ app.use(cors());
 
 app.use('/api/auth', authRoutes);
 
-app.get("/health",(req,res)=>{
-    res.status(200).send("Server is healthy");
-});
-
+// app.get("/health",(req,res)=>{
+//     res.status(200).send("Server is healthy");
+// });
+// app.get('/api/test-protected', authMiddleware, (req: AuthRequest, res) => {
+//   res.json({ message: 'You are authenticated!', accountId: req.accountId, userId: req.userId });
+// });
 
 app.get('/test-db', async (req, res) => {
   const accounts = await prisma.account.findMany();
