@@ -35,9 +35,9 @@ export default function SignupPage() {
 
       router.push("/contacts");
 
-    } catch (err: any) {
+    } catch (err: unknown) {
 
-      setError(err.message);
+      setError(err instanceof Error ? err.message : "Signup failed");
 
     } finally {
 

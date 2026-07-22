@@ -29,8 +29,8 @@ export default function LoginPage() {
       saveToken(res.token);
 
       router.push("/contacts");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,7 @@ export default function LoginPage() {
 
         <p className="mt-5 text-center">
 
-          Don't have account?
+          Don&apos;t have account?
 
           <span
             className="text-blue-600 cursor-pointer ml-2"

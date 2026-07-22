@@ -9,7 +9,6 @@ async function apiFetch(path: string, options: RequestInit = {}) {
   const token = getToken();
 
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     ...(options.headers as Record<string, string> || {}),
   };
 
@@ -22,10 +21,12 @@ async function apiFetch(path: string, options: RequestInit = {}) {
     headers,
   });
 
-  const data = await res.json();
+  const contentType = res.headers.get('content-type') || '';
+  const data = contentType.includes('application/json') ? await res.json() : await res.text();
 
   if (!res.ok) {
-    throw new Error(data.error || 'Something went wrong');
+    const message = typeof data === 'string' ? data : data.error || 'Something went wrong';
+    throw new Error(message);
   }
 
   return data;
@@ -38,19 +39,36 @@ export const api = {
   login: (body: { email: string; password: string }) =>
     apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify(body) }),
 
-  getContacts: () => apiFetch('/api/contacts'),
+  getContacts: async () => {
+    const data = await apiFetch('/api/contacts');
+    return data.contacts || [];
+  },
 
-  createContact: (body: any) =>
+  createContact: (body: Record<string, unknown>) =>
     apiFetch('/api/contacts', { method: 'POST', body: JSON.stringify(body) }),
+
+  deleteContact: (id: number) =>
+    apiFetch(`/api/contacts/${id}`, { method: 'DELETE' }),
+
+  uploadCSV: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return apiFetch('/api/contacts/import', {
+      method: 'POST',
+      body: formData,
+      headers: {},
+    });
+  },
 
   getAudiences: () => apiFetch('/api/audiences'),
 
-  createAudience: (body: any) =>
+  createAudience: (body: Record<string, unknown>) =>
     apiFetch('/api/audiences', { method: 'POST', body: JSON.stringify(body) }),
 
   getCampaigns: () => apiFetch('/api/campaigns'),
 
-  createCampaign: (body: any) =>
+  createCampaign: (body: Record<string, unknown>) =>
     apiFetch('/api/campaigns', { method: 'POST', body: JSON.stringify(body) }),
 
   getCampaignAnalytics: (id: number) => apiFetch(`/api/campaigns/${id}/analytics`),
