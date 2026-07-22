@@ -1,36 +1,7 @@
 import { Response } from 'express';
 import prisma from '../db/prisma.js';
 import { AuthRequest } from '../middleware/authMiddleware.js';
-
-// Converts a filter rule like { field: "city", value: "Mumbai" } into a Prisma where clause
-function buildFilterWhere(accountId: number, filterRule: any) {
-  const baseWhere: any = { accountId };
-
-  if (!filterRule || !filterRule.field || filterRule.value === undefined) {
-    return baseWhere; // no filter = matches all contacts in this account
-  }
-
-  const { field, value } = filterRule;
-
-  // tags is an array field, needs a different Prisma operator than plain text fields
-  if (field === 'tags') {
-    return { ...baseWhere, tags: { has: value } };
-  }
-
-  // city, name, email, phone are direct columns
-  if (['city', 'name', 'email', 'phone'].includes(field)) {
-    return { ...baseWhere, [field]: value };
-  }
-
-  // anything else is assumed to be a custom field stored inside the JSONB column
-  return {
-    ...baseWhere,
-    customFields: {
-      path: [field],
-      equals: value,
-    },
-  };
-}
+import { buildFilterWhere } from '../utils/filterUtils.js';
 
 export const createAudience = async (req: AuthRequest, res: Response) => {
   try {
@@ -68,7 +39,7 @@ export const getAudiences = async (req: AuthRequest, res: Response) => {
     // For each audience, compute how many contacts currently match its filter
     const audiencesWithCount = await Promise.all(
       audiences.map(async (audience) => {
-        const where = buildFilterWhere(accountId, audience.filterRule);
+        const where = buildFilterWhere(accountId, audience.filterRule as Record<string, unknown>);
         const count = await prisma.contact.count({ where });
         return { ...audience, memberCount: count };
       })
@@ -94,7 +65,7 @@ export const getAudienceMembers = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ error: 'Audience not found' });
     }
 
-    const where = buildFilterWhere(accountId, audience.filterRule);
+    const where = buildFilterWhere(accountId, audience.filterRule as Record<string, unknown>);
     const contacts = await prisma.contact.findMany({ where });
 
     res.json({ audience, contacts });

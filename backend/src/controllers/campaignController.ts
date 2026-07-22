@@ -2,6 +2,7 @@ import { Response } from 'express';
 import prisma from '../db/prisma.js';
 import { AuthRequest } from '../middleware/authMiddleware.js';
 import { campaignQueue } from '../queues/campaignQueue.js';
+import { buildFilterWhere } from '../utils/filterUtils.js';
 
 export const createCampaign = async (req: AuthRequest, res: Response) => {
   try {
@@ -86,14 +87,8 @@ export const setRecipientsFromAudience = async (req: AuthRequest, res: Response)
       if (!audience) {
         return res.status(404).json({ error: 'Audience not found' });
       }
-      // reuse the same filter logic we built for audiences
-      const filterRule = audience.filterRule as any;
-      const where: any = { accountId };
-      if (filterRule?.field === 'tags') {
-        where.tags = { has: filterRule.value };
-      } else if (filterRule?.field) {
-        where[filterRule.field] = filterRule.value;
-      }
+      const filterRule = audience.filterRule as Record<string, unknown>;
+      const where = buildFilterWhere(accountId, filterRule);
       contacts = await prisma.contact.findMany({ where });
     } else if (tag) {
       contacts = await prisma.contact.findMany({
@@ -188,7 +183,7 @@ export const sendCampaign = async (req: AuthRequest, res: Response) => {
   try {
     const accountId = req.accountId as number;
     const campaignId = Number(req.params.id);
-    const { scheduledAt } = req.body; // optional — agar diya hai to schedule, warna abhi bhejo
+    const { scheduledAt } = req.body;
 
     const campaign = await prisma.campaign.findFirst({
       where: { id: campaignId, accountId },

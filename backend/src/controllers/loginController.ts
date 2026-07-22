@@ -16,6 +16,11 @@ const login = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(String(email).trim())) {
+      return res.status(400).json({ error: "Enter a valid email address" });
+    }
+
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {

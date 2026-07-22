@@ -7,26 +7,38 @@ const createContact = async (req: AuthRequest, res: Response) => {
     const accountId = req.accountId as number;
     const { name, email, phone, city, tags, customFields } = req.body;
 
+    if (!email && !phone) {
+      return res.status(400).json({ error: "Email or phone is required" });
+    }
+
     if (email) {
-      const existing = await prisma.contact.findFirst({
-        where: {
-          accountId,
-          OR: [{ email: email || undefined }, { phone: phone || undefined }],
-        },
-      });
-      if (existing) {
-        return res
-          .status(409)
-          .json({ error: "Contact with this email or phone already exists" });
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(String(email).trim())) {
+        return res.status(400).json({ error: "Enter a valid email address" });
       }
+    }
+
+    const existing = await prisma.contact.findFirst({
+      where: {
+        accountId,
+        OR: [
+          ...(email ? [{ email: email.toLowerCase().trim() }] : []),
+          ...(phone ? [{ phone: phone.trim() }] : []),
+        ],
+      },
+    });
+    if (existing) {
+      return res
+        .status(409)
+        .json({ error: "Contact with this email or phone already exists" });
     }
 
     const contact = await prisma.contact.create({
       data: {
         accountId,
         name,
-        email,
-        phone,
+        email: email ? email.toLowerCase().trim() : null,
+        phone: phone ? phone.trim() : null,
         city,
         tags: tags || [],
         customFields: customFields || {},
