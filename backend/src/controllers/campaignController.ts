@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import prisma from '../db/prisma.js';
 import { AuthRequest } from '../middleware/authMiddleware.js';
+import { campaignQueue } from '../queues/campaignQueue.js';
 
 export const createCampaign = async (req: AuthRequest, res: Response) => {
   try {
@@ -180,5 +181,54 @@ export const setRecipientsFromList = async (req: AuthRequest, res: Response) => 
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to resolve recipients' });
+  }
+};
+
+export const sendCampaign = async (req: AuthRequest, res: Response) => {
+  try {
+    const accountId = req.accountId as number;
+    const campaignId = Number(req.params.id);
+    const { scheduledAt } = req.body; // optional — agar diya hai to schedule, warna abhi bhejo
+
+    const campaign = await prisma.campaign.findFirst({
+      where: { id: campaignId, accountId },
+      include: { recipients: true },
+    });
+
+    if (!campaign) {
+      return res.status(404).json({ error: 'Campaign not found' });
+    }
+
+    if (campaign.recipients.length === 0) {
+      return res.status(400).json({ error: 'Campaign has no recipients. Add recipients first.' });
+    }
+
+    if (scheduledAt) {
+      const scheduledTime = new Date(scheduledAt);
+      const delay = scheduledTime.getTime() - Date.now();
+
+      if (delay <= 0) {
+        return res.status(400).json({ error: 'scheduledAt must be a future date/time' });
+      }
+
+      await prisma.campaign.update({
+        where: { id: campaignId },
+        data: { status: 'scheduled', scheduledAt: scheduledTime },
+      });
+
+      await campaignQueue.add(
+        'send-campaign',
+        { campaignId },
+        { delay }
+      );
+
+      return res.json({ message: `Campaign scheduled for ${scheduledTime.toISOString()}` });
+    } else {
+      await campaignQueue.add('send-campaign', { campaignId });
+      return res.json({ message: 'Campaign queued for immediate sending' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to send campaign' });
   }
 };

@@ -4,6 +4,7 @@ import prisma from './db/prisma.js';
 import cors from 'cors';
 dotenv.config();
 const PORT = process.env.PORT || 5000;
+import './workers/campaignWorker.js';
 import authRoutes from './routes/authRoutes.js';
 // import authMiddleware, { AuthRequest } from './middleware/authMiddleware.js';
 import contactRoutes from './routes/contactRoutes.js';
