@@ -16,8 +16,7 @@ async function apiFetch(path: string, options: RequestInit = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  // If the body is a JSON string and no content-type provided, set it.
-  const body = options.body as any;
+  const body = options.body as unknown;
   if (body && !(body instanceof FormData)) {
     const hasContentType = Object.keys(headers).some(h => h.toLowerCase() === 'content-type');
     if (!hasContentType) {
@@ -56,13 +55,15 @@ export const api = {
   createContact: (body: Record<string, unknown>) =>
     apiFetch('/api/contacts', { method: 'POST', body: JSON.stringify(body) }),
 
+  updateContact: (id: number, body: Record<string, unknown>) =>
+    apiFetch(`/api/contacts/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+
   deleteContact: (id: number) =>
     apiFetch(`/api/contacts/${id}`, { method: 'DELETE' }),
 
   uploadCSV: (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-
     return apiFetch('/api/contacts/import', {
       method: 'POST',
       body: formData,
@@ -75,10 +76,29 @@ export const api = {
   createAudience: (body: Record<string, unknown>) =>
     apiFetch('/api/audiences', { method: 'POST', body: JSON.stringify(body) }),
 
+  getAudienceMembers: (id: number) => apiFetch(`/api/audiences/${id}/members`),
+
   getCampaigns: () => apiFetch('/api/campaigns'),
+
+  getCampaign: (id: number) => apiFetch(`/api/campaigns/${id}`),
 
   createCampaign: (body: Record<string, unknown>) =>
     apiFetch('/api/campaigns', { method: 'POST', body: JSON.stringify(body) }),
+
+  setRecipientsFromAudience: (id: number, body: { audienceId?: number; tag?: string }) =>
+    apiFetch(`/api/campaigns/${id}/recipients/audience`, { method: 'POST', body: JSON.stringify(body) }),
+
+  setRecipientsFromList: (id: number, entries: string[]) =>
+    apiFetch(`/api/campaigns/${id}/recipients/list`, {
+      method: 'POST',
+      body: JSON.stringify({ entries }),
+    }),
+
+  sendCampaign: (id: number, scheduledAt?: string) =>
+    apiFetch(`/api/campaigns/${id}/send`, {
+      method: 'POST',
+      body: JSON.stringify(scheduledAt ? { scheduledAt } : {}),
+    }),
 
   getCampaignAnalytics: (id: number) => apiFetch(`/api/campaigns/${id}/analytics`),
 };

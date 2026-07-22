@@ -1,0 +1,16 @@
+name,email,phone,city,tags,company,role
+Alice Johnson,alice@example.com,+1-555-0101,New York,vip,Acme Corp,Manager
+Bob Smith,bob@example.com,+1-555-0102,Los Angeles,newsletter,Startup Inc,Developer
+Carol White,carol@example.com,+1-555-0103,Chicago,vip,BigCo,Director
+David Lee,david@example.com,+1-555-0101,San Francisco,newsletter,Tech LLC,Engineer
+Eve Brown,eve@example.com,+1-555-0104,Miami,vip,Retail Co,Owner
+Frank Miller,frank@example.com,+1-555-0105,Seattle,newsletter,Cloud Inc,Analyst
+Grace Kim,grace@example.com,+1-555-0106,Austin,vip,Finance Co,CFO
+Henry Davis,henry@example.com,+1-555-0102,Denver,newsletter,Media Co,Writer
+Ivy Chen,ivy@example.com,+1-555-0107,Boston,vip,Health Co,Doctor
+Jack Wilson,jack@example.com,+1-555-0108,Portland,newsletter,Design Co,Designer
+Alice Johnson,alice@example.com,+1-555-0101,New York,vip,Acme Corp,Manager
+Bob Smith,bob@example.com,+1-555-0102,Los Angeles,newsletter,Startup Inc,Developer
+Laura Adams,,+1-555-0109,Phoenix,vip,Legal Co,Lawyer
+Mike Taylor,mike@example.com,,Dallas,newsletter,Logistics Co,Driver
+Nina Patel,nina@example.com,+1-555-0110,Atlanta,vip,Consulting Co,Partner

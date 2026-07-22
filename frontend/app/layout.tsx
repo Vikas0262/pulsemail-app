@@ -1,8 +1,14 @@
+import { Inter } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
 
 export const metadata = {
   title: "PulseMail",
-  description: "Email Campaign Manager",
+  description: "Email campaign manager",
 };
 
 export default function RootLayout({
@@ -12,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={inter.variable}>{children}</body>
     </html>
   );
 }

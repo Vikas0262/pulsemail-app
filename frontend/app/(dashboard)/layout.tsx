@@ -1,17 +1,16 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
+import AppShell from "@/components/AppShell";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-export default function ContactsLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <ProtectedRoute>
-      <Navbar />
-      <main className="p-8">{children}</main>
+      <AppShell>{children}</AppShell>
     </ProtectedRoute>
   );
 }
