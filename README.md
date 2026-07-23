@@ -313,6 +313,3 @@ These are choices made during the project and things that were skipped:
 
 ---
 
-## License
-
-This is a take-home assignment project.
