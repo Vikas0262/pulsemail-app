@@ -14,24 +14,20 @@ They talk to each other over HTTP. The backend is **not** inside Next.js API rou
 
 | | URL |
 |---|---|
-| **App** | _Add your deployed URL here (e.g. Vercel)_ |
-| **GitHub** | _Add your repo URL here_ |
-| **Loom walkthrough** | _Add your Loom video link here_ |
-
+| **App** | https://pulsemail-app.vercel.app |
+| **GitHub** | https://github.com/Vikas0262/pulsemail-app |
 ---
 
 ## What you need before running
 
-Install these on your machine:
-
 | Requirement | Why |
 |-------------|-----|
 | **Node.js 20+** | Runs the frontend and backend |
-| **PostgreSQL** | Stores users, contacts, campaigns, etc. |
-| **Redis** | Powers the job queue for scheduled email sends |
-| **Resend account** (free) | Sends emails and sends back delivery/open webhooks |
+| **A Postgres connection string** | We used Supabase (free tier) — any managed Postgres works |
+| **A Redis connection string** | We used Upstash (free tier) — any managed Redis works |
+| **Resend account** (free) | Sends emails and delivers webhooks for delivered/opened tracking |
 
-You also need a **Resend API key** from [resend.com](https://resend.com). The free tier is enough for this project.
+You don't need to install Postgres or Redis locally — sign up for free accounts at [supabase.com](https://supabase.com) and [upstash.com](https://upstash.com), then paste the connection strings into your `.env` file.
 
 ---
 
@@ -111,8 +107,8 @@ Never commit your `.env` files. Use the example files as a template.
 
 | Variable | What it does |
 |----------|--------------|
-| `DATABASE_URL` | PostgreSQL connection string for Prisma |
-| `DIRECT_URL` | Direct Postgres URL (same as above for local dev) |
+| `DATABASE_URL` | Pooled Postgres connection (Supabase transaction mode, port 6543) — used at runtime |
+| `DIRECT_URL` | Direct Postgres connection (Supabase session mode, port 5432) — used only for migrations |
 | `REDIS_URL` | Redis connection, e.g. `redis://localhost:6379` |
 | `JWT_SECRET` | Secret key used to sign login tokens — use a long random string |
 | `RESEND_API_KEY` | Your Resend API key for sending emails |
