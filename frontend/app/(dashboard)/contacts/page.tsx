@@ -44,7 +44,8 @@ export default function ContactsPage() {
       const data = await api.getContacts();
       setContacts(data);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to load contacts";
+      const message =
+        err instanceof Error ? err.message : "Failed to load contacts";
       if (message === "Unauthorized") {
         logout();
         router.push("/login");
@@ -77,7 +78,12 @@ export default function ContactsPage() {
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
       city: form.city.trim() || null,
-      tags: form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
+      tags: form.tags
+        ? form.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [],
       customFields: editing
         ? { ...(editing.customFields || {}), ...buildCustomFields() }
         : buildCustomFields(),
@@ -144,9 +150,14 @@ export default function ContactsPage() {
       const result = await api.uploadCSV(csv);
       setCsv(null);
       await loadContacts();
-      setSuccess(result.message || `${result.added} added, ${result.skipped} skipped as duplicates`);
+      setSuccess(
+        result.message ||
+          `${result.added} added, ${result.skipped} skipped as duplicates`,
+      );
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to import contacts");
+      setError(
+        err instanceof Error ? err.message : "Failed to import contacts",
+      );
     } finally {
       setUploading(false);
     }
@@ -161,7 +172,9 @@ export default function ContactsPage() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Contacts</h1>
-          <p className="page-subtitle">Manage your audience and import from CSV</p>
+          <p className="page-subtitle">
+            Manage your audience and import from CSV
+          </p>
         </div>
         <div className="text-sm" style={{ color: "var(--muted)" }}>
           {contacts.length} total
@@ -172,19 +185,64 @@ export default function ContactsPage() {
       {success && <div className="alert alert-success">{success}</div>}
 
       <div className="card p-6 mb-6">
-        <h2 className="font-semibold mb-4">{editing ? "Edit contact" : "Add contact"}</h2>
+        <h2 className="font-semibold mb-4">
+          {editing ? "Edit contact" : "Add contact"}
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
-          <input className="input" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <input className="input" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-          <input className="input" placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-          <input className="input" placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
-          <input className="input" placeholder="Tags (comma separated)" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} />
-          <input className="input" placeholder="Custom field key" value={form.customKey} onChange={(e) => setForm({ ...form, customKey: e.target.value })} />
-          <input className="input" placeholder="Custom field value" value={form.customValue} onChange={(e) => setForm({ ...form, customValue: e.target.value })} />
+          <input
+            className="input"
+            placeholder="Name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="Phone"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="City"
+            value={form.city}
+            onChange={(e) => setForm({ ...form, city: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="Tags (comma separated)"
+            value={form.tags}
+            onChange={(e) => setForm({ ...form, tags: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="Custom field key"
+            value={form.customKey}
+            onChange={(e) => setForm({ ...form, customKey: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="Custom field value"
+            value={form.customValue}
+            onChange={(e) => setForm({ ...form, customValue: e.target.value })}
+          />
         </div>
         <div className="flex gap-2">
-          <button className="btn btn-primary" onClick={saveContact} disabled={submitting}>
-            {submitting ? "Saving…" : editing ? "Update contact" : "Add contact"}
+          <button
+            className="btn btn-primary"
+            onClick={saveContact}
+            disabled={submitting}
+          >
+            {submitting
+              ? "Saving…"
+              : editing
+                ? "Update contact"
+                : "Add contact"}
           </button>
           {editing && (
             <button
@@ -203,11 +261,25 @@ export default function ContactsPage() {
       <div className="card p-6 mb-6">
         <h2 className="font-semibold mb-2">Import CSV</h2>
         <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>
-          Use <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">mock-data/contacts.csv</code> to test. Extra columns become custom fields. Duplicates are skipped and reported.
+          Use{" "}
+          <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">
+            mock-data/contacts.csv
+          </code>{" "}
+          to test. Extra columns become custom fields. Duplicates are skipped
+          and reported.
         </p>
         <div className="flex flex-wrap gap-3 items-center">
-          <input type="file" accept=".csv" onChange={(e) => setCsv(e.target.files?.[0] || null)} />
-          <button className="btn btn-primary" onClick={uploadCSV} disabled={uploading}>
+          <input
+            type="file"
+            accept=".csv"
+            onChange={(e) => setCsv(e.target.files?.[0] || null)}
+            className="text-sm file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-indigo-600 file:text-white file:font-medium hover:file:bg-indigo-700 file:cursor-pointer cursor-pointer"
+          />
+          <button
+            className="btn btn-primary"
+            onClick={uploadCSV}
+            disabled={uploading}
+          >
             {uploading ? "Importing…" : "Import CSV"}
           </button>
         </div>
@@ -229,7 +301,9 @@ export default function ContactsPage() {
           <tbody>
             {contacts.length === 0 ? (
               <tr>
-                <td colSpan={7} className="empty-state">No contacts yet</td>
+                <td colSpan={7} className="empty-state">
+                  No contacts yet
+                </td>
               </tr>
             ) : (
               contacts.map((contact) => (
@@ -238,16 +312,31 @@ export default function ContactsPage() {
                   <td>{contact.email || "—"}</td>
                   <td>{contact.phone || "—"}</td>
                   <td>{contact.city || "—"}</td>
-                  <td>{contact.tags?.length ? contact.tags.join(", ") : "—"}</td>
+                  <td>
+                    {contact.tags?.length ? contact.tags.join(", ") : "—"}
+                  </td>
                   <td className="text-xs" style={{ color: "var(--muted)" }}>
-                    {contact.customFields && Object.keys(contact.customFields).length
-                      ? Object.entries(contact.customFields).map(([k, v]) => `${k}: ${v}`).join(", ")
+                    {contact.customFields &&
+                    Object.keys(contact.customFields).length
+                      ? Object.entries(contact.customFields)
+                          .map(([k, v]) => `${k}: ${v}`)
+                          .join(", ")
                       : "—"}
                   </td>
                   <td>
                     <div className="flex gap-2">
-                      <button className="btn btn-secondary text-xs py-1 px-2" onClick={() => startEdit(contact)}>Edit</button>
-                      <button className="btn btn-danger text-xs py-1 px-2" onClick={() => deleteContact(contact.id)}>Delete</button>
+                      <button
+                        className="btn btn-secondary text-xs py-1 px-2"
+                        onClick={() => startEdit(contact)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger text-xs py-1 px-2"
+                        onClick={() => deleteContact(contact.id)}
+                      >
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
