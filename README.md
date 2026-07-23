@@ -82,7 +82,6 @@ Open a new terminal:
 ```bash
 cd frontend
 npm install
-cp .env.local.example .env.local
 npm run dev
 ```
 
@@ -237,7 +236,7 @@ Suggested setup (all have free tiers):
 | Service | What to deploy |
 |---------|----------------|
 | **Vercel** | Frontend (`frontend/` folder) — set `NEXT_PUBLIC_API_URL` to your backend URL |
-| **Railway** or **Render** | Backend — needs Postgres + Redis add-ons |
+| **Render** | Backend — needs Postgres + Redis add-ons |
 | **Upstash** | Redis (alternative if your host doesn't include Redis) |
 
 Important:
@@ -314,6 +313,3 @@ These are choices made during the project and things that were skipped:
 
 ---
 
-## License
-
-This is a take-home assignment project.
